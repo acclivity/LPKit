@@ -49,17 +49,17 @@
     SEL                 _doubleAction @accessors(property=doubleAction);
 }
 
-+ (CPString)themeClass
++ (CPString)defaultThemeClass
 {
-    return @"lp-calendar-view";
+    return @"calendar-view";
 }
 
 + (id)themeAttributes
 {
-    return [CPDictionary dictionaryWithObjects:[[CPNull null], [CPNull null], [CPNull null], [CPNull null], [CPNull null], [CPNull null], [CPNull null], [CPNull null], CGSizeMake(0,0), [CPNull null], [CPNull null], 40, [CPNull null], [CPNull null], [CPNull null], [CPNull null], [CPNull null], [CPNull null], 30, [CPNull null], [CPNull null], [CPNull null], [CPNull null]]
+    return [CPDictionary dictionaryWithObjects:[[CPNull null], [CPNull null], [CPNull null], [CPNull null], [CPNull null], [CPNull null], [CPNull null], [CPNull null], CGSizeMake(0,0), CGSizeMake(16.0, 16.0), [CPNull null], [CPNull null], CGSizeMake(16.0, 16.0), 40, [CPNull null], [CPNull null], CGSizeMake(0.0, 0.0), [CPNull null], [CPNull null], [CPNull null], [CPNull null], 30, [CPNull null], [CPNull null], [CPNull null], [CPNull null]]
                                        forKeys:[@"background-color", @"grid-color",
                                                 @"tile-size", @"tile-font", @"tile-text-color", @"tile-text-shadow-color", @"tile-text-shadow-offset", @"tile-bezel-color",
-                                                @"header-button-offset", @"header-prev-button-image", @"header-next-button-image", @"header-height", @"header-background-color", @"header-font", @"header-text-color", @"header-text-shadow-color", @"header-text-shadow-offset", @"header-alignment",
+                                                @"header-button-offset", @"header-prev-button-size", @"header-prev-button-image", @"header-next-button-image", @"header-next-button-size", @"header-height", @"header-background-color", @"header-font", @"header-text-offset", @"header-text-color", @"header-text-shadow-color", @"header-text-shadow-offset", @"header-alignment",
                                                 @"header-weekday-offset", @"header-weekday-label-font", @"header-weekday-label-color", @"header-weekday-label-shadow-color", @"header-weekday-label-shadow-offset"]];
 
 }
@@ -196,10 +196,14 @@
 {
     var width = CGRectGetWidth([self bounds]),
         headerHeight = [self currentValueForThemeAttribute:@"header-height"];
-        
+
     [headerView setFrameSize:CGSizeMake(width, headerHeight)];
+    [headerView setNeedsLayout];
+
     [slideView setFrame:CGRectMake(0, headerHeight, width, CGRectGetHeight([self bounds]) - headerHeight)];
-    
+    [firstMonthView setNeedsLayout];
+    [secondMonthView setNeedsLayout];
+
     [slideView setBackgroundColor:[self currentValueForThemeAttribute:@"background-color"]];
 }
 

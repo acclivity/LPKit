@@ -92,7 +92,8 @@ var LPMonthNames = [@"January", @"February", @"March", @"April", @"May", @"June"
     
     [monthLabel setStringValue:[CPString stringWithFormat:@"%s %i", LPMonthNames[representedDate.getUTCMonth()], representedDate.getUTCFullYear()]];
     [monthLabel sizeToFit];
-    [monthLabel setCenter:CGPointMake(CGRectGetMidX([self bounds]), 16)];
+
+    [self setNeedsLayout];
 }
 
 - (void)setWeekStartsOnMonday:(BOOL)shouldWeekStartOnMonday
@@ -116,17 +117,30 @@ var LPMonthNames = [@"January", @"February", @"March", @"April", @"May", @"June"
     
     // Title
     [self setBackgroundColor:[superview valueForThemeAttribute:@"header-background-color" inState:themeState]];
+
+    // [monthLabel setCenter:CGPointMake(CGRectGetMidX([self bounds]), [[self superview] valueForThemeAttribute:@"header-text-offset"])];
     [monthLabel setFont:[superview valueForThemeAttribute:@"header-font" inState:themeState]];
     [monthLabel setTextColor:[superview valueForThemeAttribute:@"header-text-color" inState:themeState]];
     [monthLabel setTextShadowColor:[superview valueForThemeAttribute:@"header-text-shadow-color" inState:themeState]];
     [monthLabel setTextShadowOffset:[superview valueForThemeAttribute:@"header-text-shadow-offset" inState:themeState]];
+
+    var monthOrigin = CGPointMakeZero(),
+        monthOffset = [superview valueForThemeAttribute:@"header-text-offset"];
+
+    monthOrigin.x = CGRectGetMidX(bounds) - CGRectGetMidX([monthLabel bounds]) + monthOffset.width;
+    monthOrigin.y = CGRectGetMidY(bounds) - CGRectGetMidY([monthLabel bounds]) + monthOffset.height;
+    [monthLabel setFrameOrigin:monthOrigin]
     
     // Arrows
     var buttonOrigin = [superview valueForThemeAttribute:@"header-button-offset" inState:themeState];
     [prevButton setFrameOrigin:CGPointMake(buttonOrigin.width, buttonOrigin.height)];
+    [prevButton setFrameSize:[superview valueForThemeAttribute:@"header-prev-button-size"]];
     [prevButton setValue:[superview valueForThemeAttribute:@"header-prev-button-image" inState:themeState] forThemeAttribute:@"bezel-color" inState:CPThemeStateBordered];
-    [nextButton setFrameOrigin:CGPointMake(width - 16 - buttonOrigin.width, buttonOrigin.height)];
+
+    var buttonSize = [superview valueForThemeAttribute:@"header-next-button-size"];
+    [nextButton setFrameOrigin:CGPointMake(width - buttonSize.width - buttonOrigin.width, buttonOrigin.height)];
     [nextButton setValue:[superview valueForThemeAttribute:@"header-next-button-image" inState:themeState] forThemeAttribute:@"bezel-color" inState:CPThemeStateBordered];
+    [nextButton setFrameSize:buttonSize];
     
     // Weekday labels
     var numberOfLabels = [dayLabels count],

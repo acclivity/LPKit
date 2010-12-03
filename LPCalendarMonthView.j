@@ -292,8 +292,12 @@ var _startAndEndOfWeekCache = {};
         {
             for (var dayIndex = 0; dayIndex < 7; dayIndex++)
             {
-                // CGRectInset() mucks up the frame for some reason.
-                var tileFrame = CGRectMake((dayIndex * tileSize.width) + dayIndex, weekIndex * tileSize.height, tileSize.width, tileSize.height -1);
+                var tileFrame = CGRectMakeZero();
+
+                tileFrame.origin.x = dayIndex * tileSize.width + 1.0;
+                tileFrame.origin.y = weekIndex * tileSize.height + 1.0;
+                tileFrame.size.width = tileSize.width - 1.0;
+                tileFrame.size.height = tileSize.height - 1.0;
 
                 [tiles[tileIndex] setFrame:tileFrame];
                 tileIndex += 1;
@@ -472,15 +476,24 @@ var _startAndEndOfWeekCache = {};
         height = CGRectGetHeight(bounds),
         tileSize = [self tileSize];
 
-    CGContextSetFillColor(context, [calendarView currentValueForThemeAttribute:@"grid-color"]);
+    CGContextSetStrokeColor(context, [calendarView currentValueForThemeAttribute:@"grid-color"]);
+    CGContextSetLineWidth(context, 1.0);
 
     // Horizontal lines
-    for (var i = 1; i < 6; i++)
-        CGContextFillRect(context, CGRectMake(0, i * tileSize.height - 1, width, 1));
+    for (var i = 0; i <= 6; i++)
+    {
+        CGContextMoveToPoint(context, 0.0, i * tileSize.height + 0.5);
+        CGContextAddLineToPoint(context, width, i * tileSize.height + 0.5);
+    }
 
     // Vertical lines
-    for (var i = 0; i < 7; i++)
-        CGContextFillRect(context, CGRectMake((i - 1) + (i * tileSize.width), 0, 1, height));
+    for (var i = 0; i <= 7; i++)
+    {
+        CGContextMoveToPoint(context, i * tileSize.width + 0.5, 0.0);
+        CGContextAddLineToPoint(context, i * tileSize.width + 0.5, height);
+    }
+
+    CGContextStrokePath(context);
 }
 
 @end
