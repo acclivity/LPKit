@@ -187,7 +187,10 @@ var LPAnchorButtonUnderlineMaskKey = @"LPAnchorButtonUnderlineMaskKey";
 {
     if (self = [super initWithCoder:aCoder])
     {
-        _underlineMask = [aCoder decodeIntForKey:LPAnchorButtonUnderlineMaskKey] || LPAnchorButtonNoUnderline;
+        _underlineMask = [aCoder decodeIntForKey:LPAnchorButtonUnderlineMaskKey];
+
+        if (!_underlineMask)
+            _underlineMask = LPAnchorButtonNormalUnderline | LPAnchorButtonHoverUnderline
     }
 
     return self;
