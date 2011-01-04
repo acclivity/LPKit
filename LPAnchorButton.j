@@ -41,6 +41,11 @@ LPAnchorButtonHoverUnderline  = 2;
     id _DOMAnchorElement;
 }
 
++ (CPString)defaultThemeClass
+{
+    return @"anchor-button";
+}
+
 + (id)buttonWithTitle:(CPString)aTitle
 {
     var button = [[self alloc] init];
@@ -79,17 +84,7 @@ LPAnchorButtonHoverUnderline  = 2;
 
 - (void)setTextHoverColor:(CPColor)aColor
 {
-    [self setValue:aColor forThemeAttribute:@"text-color" inState:CPThemeStateHighlighted];
-}
-
-- (void)mouseEntered:(CPEvent)anEvent
-{
-    [self setThemeState:CPThemeStateHighlighted];
-}
-
-- (void)mouseExited:(CPEvent)anEvent
-{
-    [self unsetThemeState:CPThemeStateHighlighted];
+    [self setValue:aColor forThemeAttribute:@"text-color" inState:CPThemeStateHovered];
 }
 
 - (void)mouseDown:(CPEvent)anEvent
@@ -114,11 +109,14 @@ LPAnchorButtonHoverUnderline  = 2;
 
 - (CPView)createEphemeralSubviewNamed:(CPString)aName
 {
-    return [[_CPImageAndTextView alloc] initWithFrame:CGRectMakeZero()];
+    var contentView = [[_CPImageAndTextView alloc] initWithFrame:CGRectMakeZero()];
+    return contentView;
 }
 
 - (void)layoutSubviews
 {
+    [super layoutSubviews];
+
     // Set up anchor element if needed
     if (_URL)
     {
@@ -140,14 +138,16 @@ LPAnchorButtonHoverUnderline  = 2;
         _DOMAnchorElement.style.height = CGRectGetHeight(bounds) + @"px";
     }
 
-    var cssTextDecoration = @"none";
+    var shouldUnderline = NO,
+        isNormalThemeState = [self hasThemeState:CPThemeStateNormal] || [self hasThemeState:CPThemeStateSelected] || [self hasThemeState:CPThemeStateHighlighted],
+        isHoverThemeState = [self hasThemeState:CPThemeStateHovered];
 
-    // Check if we should underline
-    if (((_themeState === CPThemeStateNormal || _themeState === CPThemeStateSelected) && (_underlineMask & LPAnchorButtonNormalUnderline)) ||
-        ((_themeState & CPThemeStateHighlighted) && (_underlineMask & LPAnchorButtonHoverUnderline)))
-    {
-        cssTextDecoration = @"underline";
-    }
+    if (_underlineMask & LPAnchorButtonNormalUnderline)
+        shouldUnderline = isNormalThemeState;
+    else if (_underlineMask & LPAnchorButtonHoverUnderline)
+        shouldUnderline = isHoverThemeState;
+    else
+        shouldUnderline = NO;
 
     var contentView = [self layoutEphemeralSubviewNamed:@"content-view"
                                              positioned:CPWindowAbove
@@ -165,11 +165,14 @@ LPAnchorButtonHoverUnderline  = 2;
         [contentView setTextShadowColor:[self currentValueForThemeAttribute:@"text-shadow-color"]];
         [contentView setTextShadowOffset:[self currentValueForThemeAttribute:@"text-shadow-offset"]];
 
+        // Force the layout to make sure the needed DOM elements are available
+        [contentView layoutIfNeeded];
+
         if (contentView._DOMTextElement)
-            contentView._DOMTextElement.style.setProperty(@"text-decoration", cssTextDecoration, null);
+            contentView._DOMTextElement.style.textDecoration = shouldUnderline ? @"underline" : @"none";
 
         if (contentView._DOMTextShadowElement)
-            contentView._DOMTextShadowElement.style.setProperty(@"text-decoration", cssTextDecoration, null);
+            contentView._DOMTextShadowElement.style.textDecoration = shouldUnderline ? @"underline" : @"none";
     }
 }
 
