@@ -142,12 +142,12 @@ LPAnchorButtonHoverUnderline  = 2;
         isNormalThemeState = [self hasThemeState:CPThemeStateNormal] || [self hasThemeState:CPThemeStateSelected] || [self hasThemeState:CPThemeStateHighlighted],
         isHoverThemeState = [self hasThemeState:CPThemeStateHovered];
 
-    if (_underlineMask & LPAnchorButtonNormalUnderline)
-        shouldUnderline = isNormalThemeState;
-    else if (_underlineMask & LPAnchorButtonHoverUnderline)
-        shouldUnderline = isHoverThemeState;
+    if (isNormalThemeState && _underlineMask & LPAnchorButtonNormalUnderline)
+        shouldUnderline = YES;
+    else if (isHoverThemeState && _underlineMask & LPAnchorButtonHoverUnderline)
+        shouldUnderline = YES;
     else
-        shouldUnderline = NO;
+        NO;
 
     var contentView = [self layoutEphemeralSubviewNamed:@"content-view"
                                              positioned:CPWindowAbove
