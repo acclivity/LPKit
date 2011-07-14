@@ -89,6 +89,9 @@ LPAnchorButtonHoverUnderline  = 2;
 
 - (void)mouseDown:(CPEvent)anEvent
 {
+    if (![self isEnabled])
+        return;
+
     if (_URL)
     {
         [[[self window] platformWindow] _propagateCurrentDOMEvent:YES];
@@ -136,18 +139,21 @@ LPAnchorButtonHoverUnderline  = 2;
 
         _DOMAnchorElement.style.width = CGRectGetWidth(bounds) + @"px";
         _DOMAnchorElement.style.height = CGRectGetHeight(bounds) + @"px";
+
+        _DOMAnchorElement.style.display = [self isEnabled] ? @"block" : @"none";
     }
 
     var shouldUnderline = NO,
-        isNormalThemeState = [self hasThemeState:CPThemeStateNormal] || [self hasThemeState:CPThemeStateSelected] || [self hasThemeState:CPThemeStateHighlighted],
+        isNormalThemeState = [self hasThemeState:CPThemeStateNormal] ||
+                                [self hasThemeState:CPThemeStateSelected] ||
+                                [self hasThemeState:CPThemeStateHighlighted] ||
+                                [self hasThemeState:CPThemeStateDisabled],
         isHoverThemeState = [self hasThemeState:CPThemeStateHovered];
 
     if (isNormalThemeState && _underlineMask & LPAnchorButtonNormalUnderline)
         shouldUnderline = YES;
     else if (isHoverThemeState && _underlineMask & LPAnchorButtonHoverUnderline)
         shouldUnderline = YES;
-    else
-        NO;
 
     var contentView = [self layoutEphemeralSubviewNamed:@"content-view"
                                              positioned:CPWindowAbove
