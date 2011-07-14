@@ -130,6 +130,14 @@ LPAnchorButtonHoverUnderline  = 2;
             _DOMAnchorElement.style.position = "absolute";
             _DOMAnchorElement.style.zIndex = "100";
 
+            // Set a fake background image because
+            // Internet explorer does not recognize the width and height of a absolutely positioned,
+            // empty anchor element. Detect the browser engine to prevent other browser from showing
+            // load errors because the image doesn't actually exist
+            // See http://www.cssnewbie.com/internet-explorer-bug-fix-disappearing-positioned-anchors/
+            if (CPBrowserIsEngine(CPInternetExplorerBrowserEngine))
+                _DOMAnchorElement.style.backgroundImage = @"url(fake_image.gif)";
+
             self._DOMElement.appendChild(_DOMAnchorElement)
         }
 
